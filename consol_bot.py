@@ -16,15 +16,32 @@ def change_handler(data):  #  зберігає в пам'яті новий но�
     name = data[0].title()
     new_phone = data[1]
     ADDRESS_BOOK[name] = new_phone
-    return f"Contacn {name} cahnged with new number {new_phone}"
+    return f"Contact {name} cahnged with new number {new_phone}"
 
 def phone_handler(name: str): #  виводить у консоль номер телефону для зазначеного контакту. Вводиться ім'я контакту
     for name, number in ADDRESS_BOOK.items():
         return f"The contact {name} has number {number}"
 
-def show_handler(**kwargs): # по команді "show all" виводить всі збереженні контакти з номерами телефонів у консоль
-    for name, number in ADDRESS_BOOK.items():
-        return f" Your contacts: {name}: {number}"
+def show_handler(*args): # по команді "show all" виводить всі збереженні контакти з номерами телефонів у консоль
+    return f" Your contacts: {ADDRESS_BOOK}"
+
+def input_error(func):
+    def inner(*args):
+        try:
+            return(func(*args))
+         
+        except KeyError:
+            return "Please, enter right command"
+                
+        except ValueError:
+            return "ValueError"
+                
+        except IndexError:
+            return "IndexError"
+                    
+    return inner
+        
+
 
 
 
@@ -34,20 +51,22 @@ def command_parser(new_raw: str):
         if items[0].lower() in value:
             return key,items[1:]
         
+        
 COMMANDS = {
     add_handler: ["add"],
     hello_handler: ["hello"],
     change_handler: ["change"],
     phone_handler: ["phone"],
-    show_handler: ["show all"],
-    exit_handler: ["good bye", "close", "exit"]
+    show_handler: ["show_all"],
+    exit_handler: ["good_bye", "close", "exit"]
 }
 
+@input_error
 def main():
     while True:
-        user_input = input(">>> ") # add Vlad 0978399927
-        if not user_input:
-            continue
+        user_input = input(">>> ") # add Vlad 0978399927, TypeError якщо немає пробілів
+        # if not user_input: # IndexError
+        #     continue
         func, data = command_parser(user_input)
         if func == exit_handler:
             break
